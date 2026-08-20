@@ -1,0 +1,25 @@
+.search-page {
+  min-height: 100vh;
+  padding: 40px 7% 80px;
+}
+
+.search-header {
+  margin-bottom: 30px;
+}
+
+.search-header h1 {
+  color: white;
+  margin: 8px 0 0;
+}
+
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 650px) {
+  .search-page {
+    padding: 30px 20px 60px;
+  }
+}

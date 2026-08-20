@@ -1,0 +1,31 @@
+.tv-page {
+  min-height: 100vh;
+  background: #0b0b0f;
+  color: white;
+}
+
+.tv-header {
+  padding: 80px 7% 50px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #0b0b0f,
+      #15151c
+    );
+}
+
+.tv-header h1 {
+  margin: 8px 0;
+  font-size: 52px;
+}
+
+.tv-header p:last-child {
+  margin: 0;
+  color: #aaa;
+  font-size: 17px;
+}
+
+.tv-content {
+  padding: 40px 7%;
+}
