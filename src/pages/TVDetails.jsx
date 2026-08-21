@@ -1,15 +1,23 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 
-import { getTVDetails } from '../services/tmdb'
+import {
+  getTVDetails,
+  getTVSeason,
+} from '../services/tmdb'
 
 import './TVDetails.css'
 
 function TVDetails() {
   const { id } = useParams()
+  const navigate = useNavigate()
 
   const [show, setShow] = useState(null)
+  const [season, setSeason] = useState(null)
+  const [selectedSeason, setSelectedSeason] = useState(1)
+
   const [loading, setLoading] = useState(true)
+  const [seasonLoading, setSeasonLoading] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -18,6 +26,10 @@ function TVDetails() {
         const data = await getTVDetails(id)
 
         setShow(data)
+
+        if (data.number_of_seasons > 0) {
+          setSelectedSeason(1)
+        }
       } catch (err) {
         console.error(err)
         setError('Failed to load TV show.')
@@ -28,6 +40,30 @@ function TVDetails() {
 
     loadShow()
   }, [id])
+
+  useEffect(() => {
+    if (!show || !selectedSeason) return
+
+    const loadSeason = async () => {
+      setSeasonLoading(true)
+
+      try {
+        const data = await getTVSeason(
+          id,
+          selectedSeason
+        )
+
+        setSeason(data)
+      } catch (err) {
+        console.error(err)
+        setSeason(null)
+      } finally {
+        setSeasonLoading(false)
+      }
+    }
+
+    loadSeason()
+  }, [id, show, selectedSeason])
 
   if (loading) {
     return (
@@ -134,6 +170,92 @@ function TVDetails() {
           </div>
 
         </div>
+
+        <section className="episodes-section">
+
+          <div className="section-heading">
+            <h2>Episodes</h2>
+          </div>
+
+          <div className="season-selector">
+
+            {show.seasons
+              ?.filter((item) => item.season_number > 0)
+              .map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={
+                    selectedSeason === item.season_number
+                      ? 'season-button active'
+                      : 'season-button'
+                  }
+                  onClick={() =>
+                    setSelectedSeason(item.season_number)
+                  }
+                >
+                  Season {item.season_number}
+                </button>
+              ))}
+
+          </div>
+
+          {seasonLoading && (
+            <div className="page-message">
+              Loading episodes...
+            </div>
+          )}
+
+          {!seasonLoading && season && (
+            <div className="episode-list">
+
+              {season.episodes?.map((episode) => (
+                <button
+                  key={episode.id}
+                  type="button"
+                  className="episode-card"
+                  onClick={() =>
+                    navigate(
+                      `/tv/${id}/${selectedSeason}/${episode.episode_number}`
+                    )
+                  }
+                >
+
+                  <div className="episode-number">
+                    {String(
+                      episode.episode_number
+                    ).padStart(2, '0')}
+                  </div>
+
+                  <div className="episode-info">
+
+                    <h3>
+                      {episode.name}
+                    </h3>
+
+                    <p>
+                      {episode.air_date || 'Unknown date'}
+                      {' • '}
+                      {episode.runtime
+                        ? `${episode.runtime} min`
+                        : 'Runtime unknown'}
+                    </p>
+
+                    {episode.overview && (
+                      <span>
+                        {episode.overview}
+                      </span>
+                    )}
+
+                  </div>
+
+                </button>
+              ))}
+
+            </div>
+          )}
+
+        </section>
 
       </div>
 

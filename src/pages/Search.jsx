@@ -8,9 +8,14 @@ import './Search.css'
 function SearchResultCard({ item }) {
   const title = item.title || item.name
   const date = item.release_date || item.first_air_date
+
   const linkTo =
-    item.media_type === 'tv' ? `/tv/${item.id}` : `/movie/${item.id}`
-  const imageUrl = `https://image.tmdb.org/t/p/w500${item.poster_path}`
+    item.media_type === 'tv'
+      ? `/tv/${item.id}`
+      : `/movie/${item.id}`
+
+  const imageUrl =
+    `https://image.tmdb.org/t/p/w500${item.poster_path}`
 
   return (
     <Link to={linkTo} className="movie-card-link">
@@ -50,7 +55,8 @@ function Search() {
 
         const filtered = data.results.filter(
           (item) =>
-            (item.media_type === 'movie' || item.media_type === 'tv') &&
+            (item.media_type === 'movie' ||
+              item.media_type === 'tv') &&
             item.poster_path
         )
 
@@ -68,8 +74,10 @@ function Search() {
 
   return (
     <main className="search-page">
+
       <section className="search-header">
         <p className="hero-label">ANSTUMOVIE</p>
+
         <h1>
           {query ? `Results for "${query}"` : 'Search'}
         </h1>
@@ -82,26 +90,40 @@ function Search() {
       )}
 
       {query && loading && (
-        <div className="page-message">Searching...</div>
+        <div className="page-message">
+          Searching...
+        </div>
       )}
 
       {query && !loading && error && (
-        <div className="page-message">{error}</div>
-      )}
-
-      {query && !loading && !error && results.length === 0 && (
         <div className="page-message">
-          No results found for "{query}".
+          {error}
         </div>
       )}
 
-      {query && !loading && !error && results.length > 0 && (
-        <div className="movie-grid search-grid">
-          {results.map((item) => (
-            <SearchResultCard key={item.id} item={item} />
-          ))}
-        </div>
-      )}
+      {query &&
+        !loading &&
+        !error &&
+        results.length === 0 && (
+          <div className="page-message">
+            No results found for "{query}".
+          </div>
+        )}
+
+      {query &&
+        !loading &&
+        !error &&
+        results.length > 0 && (
+          <div className="movie-grid search-grid">
+            {results.map((item) => (
+              <SearchResultCard
+                key={`${item.media_type}-${item.id}`}
+                item={item}
+              />
+            ))}
+          </div>
+        )}
+
     </main>
   )
 }

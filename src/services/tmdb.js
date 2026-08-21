@@ -50,6 +50,18 @@ export const getMovieDetails = (id) => {
   return api.get(`/movie/${id}`)
 }
 
+export const getMovieCredits = (id) => {
+  return api.get(`/movie/${id}/credits`)
+}
+
+export const getMovieVideos = (id) => {
+  return api.get(`/movie/${id}/videos`)
+}
+
+export const getSimilarMovies = (id) => {
+  return api.get(`/movie/${id}/similar`)
+}
+
 export const getTVDetails = (id) => {
   return api.get(`/tv/${id}`)
 }
