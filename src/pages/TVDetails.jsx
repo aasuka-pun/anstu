@@ -216,7 +216,7 @@ function TVDetails() {
                   className="episode-card"
                   onClick={() =>
                     navigate(
-                      `/tv/${id}/${selectedSeason}/${episode.episode_number}`
+                      `/watch/tv/${id}/${selectedSeason}/${episode.episode_number}`
                     )
                   }
                 >

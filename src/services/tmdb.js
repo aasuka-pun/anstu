@@ -70,6 +70,12 @@ export const getTVSeason = (id, seasonNumber) => {
   return api.get(`/tv/${id}/season/${seasonNumber}`)
 }
 
+export const getTVVideos = (id, seasonNumber, episodeNumber) => {
+  return api.get(
+    `/tv/${id}/season/${seasonNumber}/episode/${episodeNumber}/videos`
+  )
+}
+
 export const searchMulti = (query) => {
   return api.get('/search/multi', {
     params: { query },
