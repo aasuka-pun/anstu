@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
-import {
-  getTVDetails,
-  getTVSeason,
-  getTVVideos,
-  getMovieDetails,
-  getMovieVideos,
-} from '../services/tmdb'
+import { getTVDetails, getTVSeason, getMovieDetails } from '../services/tmdb'
 import './Watch.css'
 
 const servers = [
@@ -26,20 +20,6 @@ const servers = [
   { name: 'Peachify' },
 ]
 
-function findTrailer(videos) {
-  if (!videos?.length) return null
-
-  return (
-    videos.find(
-      (video) =>
-        video.site === 'YouTube' && video.type === 'Trailer' && video.official
-    ) ||
-    videos.find((video) => video.site === 'YouTube' && video.type === 'Trailer') ||
-    videos.find((video) => video.site === 'YouTube') ||
-    null
-  )
-}
-
 function Watch() {
   const { id, season: urlSeason, episode: urlEpisode } = useParams()
   const location = useLocation()
@@ -56,8 +36,6 @@ function Watch() {
     urlEpisode ? Number(urlEpisode) : ''
   )
 
-  const [trailer, setTrailer] = useState(null)
-  const [trailerLoading, setTrailerLoading] = useState(false)
   const [selectedServer, setSelectedServer] = useState('VidSrc.mov')
   const [showPlayer, setShowPlayer] = useState(false)
 
@@ -85,9 +63,6 @@ function Watch() {
         } else {
           const data = await getMovieDetails(id)
           setShow(data)
-
-          const videos = await getMovieVideos(id)
-          setTrailer(findTrailer(videos.results))
         }
       } catch (error) {
         console.error('Failed to load content:', error)
@@ -107,7 +82,6 @@ function Watch() {
       setEpisodeLoading(true)
       setEpisodes([])
       setSelectedEpisode('')
-      setTrailer(null)
 
       try {
         const data = await getTVSeason(id, selectedSeason)
@@ -127,27 +101,6 @@ function Watch() {
 
     loadEpisodes()
   }, [id, isTV, selectedSeason, urlEpisode])
-
-  // TV: load the trailer for the selected episode (falls back to the show's own videos)
-  useEffect(() => {
-    if (!isTV || !selectedSeason || !selectedEpisode) return
-
-    const loadEpisodeTrailer = async () => {
-      setTrailerLoading(true)
-      setTrailer(null)
-
-      try {
-        const data = await getTVVideos(id, selectedSeason, selectedEpisode)
-        setTrailer(findTrailer(data.results))
-      } catch (error) {
-        console.error('Failed to load trailer:', error)
-      } finally {
-        setTrailerLoading(false)
-      }
-    }
-
-    loadEpisodeTrailer()
-  }, [id, isTV, selectedSeason, selectedEpisode])
 
   if (loading) {
     return <main className="watch-page">Loading...</main>
@@ -262,9 +215,45 @@ function Watch() {
         </section>
       )}
 
-      
+      {/* PLAYER PLACEHOLDER */}
+      {showPlayer && (!isTV || (selectedSeason && selectedEpisode)) && (
+        <section className="player-section">
 
-    
+          <div className="player-header">
+            {isTV ? (
+              <h2>
+                Season {selectedSeason} • Episode {selectedEpisode}
+              </h2>
+            ) : (
+              <h2>{title}</h2>
+            )}
+
+            <p>
+              Server: <strong>{selectedServer}</strong>
+            </p>
+          </div>
+
+          <div className="video-container">
+            <div className="video-placeholder">
+              <p className="placeholder-label">
+                {isTV ? 'TV Show ID' : 'Movie ID'}
+              </p>
+              <p className="placeholder-id">{id}</p>
+
+              {isTV && (
+                <p className="placeholder-meta">
+                  Season {selectedSeason}, Episode {selectedEpisode}
+                </p>
+              )}
+
+              <p className="placeholder-meta">
+                Server: {selectedServer}
+              </p>
+            </div>
+          </div>
+
+        </section>
+      )}
 
     </main>
   )

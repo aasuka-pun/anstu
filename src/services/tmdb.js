@@ -18,6 +18,36 @@ export const getTrendingMovies = () => {
   return api.get('/trending/movie/week')
 }
 
+export const getMovieGenres = () => {
+  return api.get('/genre/movie/list')
+}
+
+export const getTVGenres = () => {
+  return api.get('/genre/tv/list')
+}
+
+export const discoverMoviesByGenre = (genreId) => {
+  return api.get('/discover/movie', {
+    params: { with_genres: genreId, sort_by: 'popularity.desc' },
+  })
+}
+
+export const discoverTVByGenre = (genreId) => {
+  return api.get('/discover/tv', {
+    params: { with_genres: genreId, sort_by: 'popularity.desc' },
+  })
+}
+
+export const discoverKDramas = (genreId) => {
+  return api.get('/discover/tv', {
+    params: {
+      with_origin_country: 'KR',
+      sort_by: 'popularity.desc',
+      ...(genreId ? { with_genres: genreId } : {}),
+    },
+  })
+}
+
 export const getTopRatedMovies = () => {
   return api.get('/movie/top_rated')
 }

@@ -4,8 +4,10 @@ import {
   getTrendingMovies,
   getTopRatedMovies,
   getUpcomingMovies,
+  getMovieGenres,
 } from '../services/tmdb'
 import MovieRow from '../components/MovieRow'
+import HeroCarousel from '../components/HeroCarousel'
 import './Home.css'
 
 function Home() {
@@ -13,23 +15,32 @@ function Home() {
   const [trendingMovies, setTrendingMovies] = useState([])
   const [topRatedMovies, setTopRatedMovies] = useState([])
   const [upcomingMovies, setUpcomingMovies] = useState([])
+  const [genreMap, setGenreMap] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     const loadMovies = async () => {
       try {
-        const [popular, trending, topRated, upcoming] = await Promise.all([
-          getPopularMovies(),
-          getTrendingMovies(),
-          getTopRatedMovies(),
-          getUpcomingMovies(),
-        ])
+        const [popular, trending, topRated, upcoming, genres] =
+          await Promise.all([
+            getPopularMovies(),
+            getTrendingMovies(),
+            getTopRatedMovies(),
+            getUpcomingMovies(),
+            getMovieGenres(),
+          ])
 
         setPopularMovies(popular.results)
         setTrendingMovies(trending.results)
         setTopRatedMovies(topRated.results)
         setUpcomingMovies(upcoming.results)
+
+        const map = {}
+        genres.genres?.forEach((genre) => {
+          map[genre.id] = genre.name
+        })
+        setGenreMap(map)
       } catch (err) {
         console.error(err)
         setError('Failed to load movies.')
@@ -51,21 +62,7 @@ function Home() {
 
   return (
     <main className="home-page">
-      <section className="hero-section">
-        <div>
-          <p className="hero-label">WELCOME TO ANSTUMOVIE</p>
-
-          <h1>Discover your next movie.</h1>
-
-          <p>
-            Explore movies and TV shows from around the world.
-          </p>
-
-          <button className="primary-button">
-            Explore Movies
-          </button>
-        </div>
-      </section>
+      <HeroCarousel movies={trendingMovies} genreMap={genreMap} />
 
       <MovieRow
         title="Popular Movies"

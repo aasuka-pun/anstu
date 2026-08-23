@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import GenreBrowser from './GenreBrowser'
 import './Navbar.css'
 
 function Navbar() {
@@ -7,6 +8,7 @@ function Navbar() {
 
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
+  const [genreOpen, setGenreOpen] = useState(false)
 
   const handleSearchSubmit = (e) => {
     e.preventDefault()
@@ -54,6 +56,14 @@ function Navbar() {
           >
             TV Shows
           </NavLink>
+
+          <button
+            type="button"
+            className="nav-link nav-link-button"
+            onClick={() => setGenreOpen(true)}
+          >
+            Genre
+          </button>
         </nav>
 
         <div className="navbar-actions">
@@ -83,6 +93,10 @@ function Navbar() {
         </div>
 
       </div>
+
+      {genreOpen && (
+        <GenreBrowser onClose={() => setGenreOpen(false)} />
+      )}
     </header>
   )
 }

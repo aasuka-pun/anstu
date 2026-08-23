@@ -62,6 +62,8 @@ function MovieDetails() {
         setMovie(details)
         setCast(credits.cast?.slice(0, 15) || [])
 
+        console.log('TMDB videos for this movie:', videos.results)
+
         const officialTrailer =
           videos.results?.find(
             (video) =>
@@ -71,7 +73,11 @@ function MovieDetails() {
           ) ||
           videos.results?.find(
             (video) => video.site === 'YouTube' && video.type === 'Trailer'
-          )
+          ) ||
+          videos.results?.find(
+            (video) => video.site === 'YouTube' && video.type === 'Teaser'
+          ) ||
+          videos.results?.find((video) => video.site === 'YouTube')
 
         setTrailer(officialTrailer || null)
 

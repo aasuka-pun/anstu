@@ -148,6 +148,36 @@
   border: none;
 }
 
+.video-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+  text-align: center;
+}
+
+.placeholder-label {
+  color: #777;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.placeholder-id {
+  font-size: 42px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+.placeholder-meta {
+  color: #aaa;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
 .player-placeholder {
   min-height: 450px;
   background: #15151d;
