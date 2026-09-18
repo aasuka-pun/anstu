@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom'
 
 function MovieCard({ movie }) {
+  const isTV = movie.media_type === 'tv' || (!movie.title && movie.name)
+
   const imageUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : null
 
   return (
     <Link
-      to={`/movie/${movie.id}`}
+      to={isTV ? `/tv/${movie.id}` : `/movie/${movie.id}`}
       className="movie-card-link"
     >
       <div className="movie-card">

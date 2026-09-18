@@ -18,6 +18,10 @@ export const getTrendingMovies = () => {
   return api.get('/trending/movie/week')
 }
 
+export const getTrendingTV = () => {
+  return api.get('/trending/tv/week')
+}
+
 export const getMovieGenres = () => {
   return api.get('/genre/movie/list')
 }
@@ -46,6 +50,26 @@ export const discoverKDramas = (genreId) => {
       ...(genreId ? { with_genres: genreId } : {}),
     },
   })
+}
+
+export const searchKeyword = (query) => {
+  return api.get('/search/keyword', {
+    params: { query },
+  })
+}
+
+export const discoverMoviesByKeyword = (keywordId) => {
+  return api.get('/discover/movie', {
+    params: { with_keywords: keywordId, sort_by: 'popularity.desc' },
+  })
+}
+
+export const getMovieRecommendations = (id) => {
+  return api.get(`/movie/${id}/recommendations`)
+}
+
+export const getTVRecommendations = (id) => {
+  return api.get(`/tv/${id}/recommendations`)
 }
 
 export const getTopRatedMovies = () => {

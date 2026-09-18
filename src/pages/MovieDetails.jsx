@@ -7,6 +7,7 @@ import {
   getMovieVideos,
   getSimilarMovies,
 } from '../services/tmdb'
+import { addToContinueWatching } from '../utils/continueWatching'
 import MovieRow from '../components/MovieRow'
 
 import './MovieDetails.css'
@@ -62,8 +63,6 @@ function MovieDetails() {
         setMovie(details)
         setCast(credits.cast?.slice(0, 15) || [])
 
-        console.log('TMDB videos for this movie:', videos.results)
-
         const officialTrailer =
           videos.results?.find(
             (video) =>
@@ -84,6 +83,14 @@ function MovieDetails() {
         setSimilarMovies(
           similar.results?.filter((item) => item.poster_path) || []
         )
+
+        addToContinueWatching({
+          id: details.id,
+          media_type: 'movie',
+          title: details.title,
+          poster_path: details.poster_path,
+          release_date: details.release_date,
+        })
       } catch (err) {
         console.error(err)
         if (!isCancelled) {
@@ -226,7 +233,7 @@ function MovieDetails() {
                 </button>
 
                 {trailer && (
-                  <a
+                  
                     href={`https://www.youtube.com/watch?v=${trailer.key}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -235,7 +242,7 @@ function MovieDetails() {
                     🎬 Watch Trailer
                   </a>
                 )}
-                
+
               </div>
 
             </div>

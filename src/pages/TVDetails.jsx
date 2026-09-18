@@ -5,6 +5,7 @@ import {
   getTVDetails,
   getTVSeason,
 } from '../services/tmdb'
+import { addToContinueWatching } from '../utils/continueWatching'
 
 import './TVDetails.css'
 
@@ -30,6 +31,14 @@ function TVDetails() {
         if (data.number_of_seasons > 0) {
           setSelectedSeason(1)
         }
+
+        addToContinueWatching({
+          id: data.id,
+          media_type: 'tv',
+          name: data.name,
+          poster_path: data.poster_path,
+          first_air_date: data.first_air_date,
+        })
       } catch (err) {
         console.error(err)
         setError('Failed to load TV show.')
