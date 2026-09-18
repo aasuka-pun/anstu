@@ -233,7 +233,7 @@ function MovieDetails() {
                 </button>
 
                 {trailer && (
-                  
+                  <a
                     href={`https://www.youtube.com/watch?v=${trailer.key}`}
                     target="_blank"
                     rel="noopener noreferrer"
