@@ -2,10 +2,15 @@ import { Link } from 'react-router-dom'
 
 function MovieCard({ movie }) {
   const isTV = movie.media_type === 'tv' || (!movie.title && movie.name)
+  const title = movie.title || movie.name
 
-  const imageUrl = movie.poster_path
-    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : null
+  // Prefer a landscape backdrop image; fall back to the poster if the
+  // title has no backdrop on file
+  const imageUrl = movie.backdrop_path
+    ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}`
+    : movie.poster_path
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : null
 
   return (
     <Link
@@ -15,29 +20,13 @@ function MovieCard({ movie }) {
       <div className="movie-card">
 
         {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={movie.title || movie.name}
-          />
+          <img src={imageUrl} alt={title} />
         ) : (
-          <div className="no-poster">
-            No Poster
-          </div>
+          <div className="no-poster">No Image</div>
         )}
 
-        <div className="movie-info">
-          <h3>
-            {movie.title || movie.name}
-          </h3>
-
-          <p>
-            {(movie.release_date || movie.first_air_date)
-              ? (
-                  movie.release_date ||
-                  movie.first_air_date
-                ).slice(0, 4)
-              : 'Unknown year'}
-          </p>
+        <div className="movie-card-overlay">
+          <h3>{title}</h3>
         </div>
 
       </div>
