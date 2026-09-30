@@ -128,6 +128,8 @@ function TrailerHero() {
       wrapperRef.current.appendChild(target)
 
       playerRef.current = new YT.Player(target, {
+        width: '100%',
+        height: '100%',
         videoId: videoKey,
         playerVars: {
           autoplay: 1,
@@ -138,10 +140,8 @@ function TrailerHero() {
           rel: 0,
           modestbranding: 1,
           iv_load_policy: 3,
+          cc_load_policy: 0,
           playsinline: 1,
-          loop: 1,
-          playlist: videoKey,
-          origin: window.location.origin,
         },
         events: {
           onReady: (e) => {
@@ -193,9 +193,8 @@ function TrailerHero() {
   if (!current) return null
 
   const { movie } = current
-  const year = movie.release_date ? movie.release_date.slice(0, 4) : null
   const backdrop = movie.backdrop_path
-    ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`
+    ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
     : null
 
   return (
@@ -203,37 +202,28 @@ function TrailerHero() {
       className="trailer-hero"
       style={backdrop ? { backgroundImage: `url(${backdrop})` } : undefined}
     >
-      <div
-        ref={wrapperRef}
-        className={ready ? 'trailer-frame ready' : 'trailer-frame'}
-        aria-hidden="true"
-      />
+      <div className="trailer-video" aria-hidden="true">
+        <div
+          ref={wrapperRef}
+          className={ready ? 'trailer-frame ready' : 'trailer-frame'}
+        />
+      </div>
 
       <div className="trailer-overlay">
-        <span className="trailer-badge">🔥 #1 Trending Today</span>
+        <h1>{movie.title}</h1>
 
-        <h2>{movie.title}</h2>
-
-        <div className="trailer-meta">
-          {typeof movie.vote_average === 'number' && movie.vote_average > 0 && (
-            <span>⭐ {movie.vote_average.toFixed(1)}</span>
-          )}
-          {year && <span>{year}</span>}
-        </div>
-
-        {movie.overview && <p className="trailer-overview">{movie.overview}</p>}
-
-        <div className="hero-buttons">
+        <div className="trailer-buttons">
           <button
             type="button"
-            className="hero-play-button"
+            className="trailer-play-button"
             onClick={() => navigate(`/watch/movie/${movie.id}`)}
           >
             ▶ Play
           </button>
+
           <button
             type="button"
-            className="hero-info-button"
+            className="trailer-info-button"
             onClick={() => navigate(`/movie/${movie.id}`)}
           >
             ⓘ Info

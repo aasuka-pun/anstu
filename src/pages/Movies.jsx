@@ -7,7 +7,7 @@ import {
 } from '../services/tmdb'
 
 import MovieRow from '../components/MovieRow'
-import TrailerHero from '../components/TrailerHero' // <-- ADDED
+import TrailerHero from '../components/TrailerHero'
 import './Movies.css'
 
 function Movies() {
@@ -68,19 +68,7 @@ function Movies() {
   return (
     <main className="movies-page">
 
-      <section className="movies-header">
-        <p className="hero-label">
-          ANSTUMOVIE
-        </p>
-
-        <h1>Movies</h1>
-
-        <p>
-          Discover popular, new, and highly rated movies.
-        </p>
-      </section>
-
-      <TrailerHero /> {/* <-- ADDED */}
+      <TrailerHero />
 
       <section className="movies-content">
 
