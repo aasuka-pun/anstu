@@ -135,3 +135,6 @@ export const searchMulti = (query) => {
     params: { query },
   })
 }
+export const getTrendingMoviesToday = () => {
+  return api.get('/trending/movie/day')
+}
