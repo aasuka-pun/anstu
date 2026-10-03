@@ -9,7 +9,7 @@ function Watch() {
   const location = useLocation()
   const isTV = location.pathname.includes('/watch/tv/')
 
-  // Default to the first provider ID in your array ("videasy")
+  // Component State
   const [selectedProviderId, setSelectedProviderId] = useState(PROVIDERS[0].id)
   const [show, setShow] = useState(null)
   const [seasons, setSeasons] = useState([])
@@ -20,14 +20,12 @@ function Watch() {
   const [loading, setLoading] = useState(true)
   const [episodeLoading, setEpisodeLoading] = useState(false)
 
-  // Find active provider and generate embed URL using its object syntax
+  // Find Active Provider & Embed URL
   const activeProvider = PROVIDERS.find((p) => p.id === selectedProviderId) || PROVIDERS[0]
   const mediaType = isTV ? 'tv' : 'movie'
-  
   const embedUrl = activeProvider.getEmbedUrl({
     type: mediaType,
     tmdbId: id,
-    imdbId: show?.imdb_id, // Pass IMDB ID if available from TMDB details
     season: selectedSeason,
     episode: selectedEpisode
   })
@@ -165,7 +163,7 @@ function Watch() {
                   setShowPlayer(false)
                 }}
               >
-                {provider.name}
+                {provider.name} {provider.recommended && '⭐'}
               </button>
             ))}
           </div>
