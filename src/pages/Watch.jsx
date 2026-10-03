@@ -3,222 +3,59 @@ import { useParams, Link, useLocation } from 'react-router-dom'
 import { getTVDetails, getTVSeason, getMovieDetails } from '../services/tmdb'
 import './Watch.css'
 
-const servers = [
-  { name: 'VidSrc.mov', recommended: true },
-  { name: 'VidSrc.fyi' },
-  { name: 'VidRock' },
-  { name: 'Vidnest' },
-  { name: 'VidKing' },
-  { name: 'VidLink' },
-  { name: 'VidFast' },
-  { name: 'VidUp' },
-  { name: 'Videasy' },
-  { name: '111Movies' },
-  { name: '2Embed' },
-  { name: 'MultiEmbed' },
-  { name: 'SuperFlix' },
-  { name: 'Peachify' },
+// Defined embed URL resolvers for all your providers
+const SERVERS = [
+  { 
+    name: 'VidSrc.mov', 
+    recommended: true, 
+    getUrl: (type, id, s, e) => type === 'tv' ? `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` : `https://vidsrc.mov/embed/movie/${id}` 
+  },
+  { 
+    name: 'VidLink', 
+    getUrl: (type, id, s, e) => type === 'tv' ? `https://vidlink.pro/tv/${id}/${s}/${e}` : `https://vidlink.pro/movie/${id}` 
+  },
+  { 
+    name: 'VidFast', 
+    getUrl: (type, id, s, e) => type === 'tv' ? `https://vidfast.pro/embed/tv/${id}/${s}/${e}` : `https://vidfast.pro/embed/movie/${id}` 
+  },
+  { 
+    name: 'Videasy', 
+    getUrl: (type, id, s, e) => type === 'tv' ? `https://player.videasy.net/tv/${id}/${s}/${e}` : `https://player.videasy.net/movie/${id}`
+  },
+  { 
+    name: '111Movies', 
+    getUrl: (type, id, s, e) => type === 'tv' ? `https://111movies.com/embed/tv/${id}/${s}/${e}` : `https://111movies.com/embed/movie/${id}` 
+  },
+  { 
+    name: 'VidSrc.fyi', 
+    getUrl: (type, id, s, e) => type === 'tv' ? `https://vidsrc.fyi/embed/tv/${id}/${s}/${e}` : `https://vidsrc.fyi/embed/movie/${id}` 
+  },
+  { 
+    name: '2Embed', 
+    getUrl: (type, id, s, e) => type === 'tv' ? `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` : `https://www.2embed.cc/embed/${id}` 
+  },
+  { 
+    name: 'MultiEmbed', 
+    getUrl: (type, id, s, e) => type === 'tv' ? `https://multiembed.mov/directstream.php?video_id=${id}&s=${s}&e=${e}` : `https://multiembed.mov/directstream.php?video_id=${id}` 
+  }
 ]
 
+// Inside your Watch component...
 function Watch() {
-  const { id, season: urlSeason, episode: urlEpisode } = useParams()
-  const location = useLocation()
-  const isTV = location.pathname.includes('/watch/tv/')
+  // ... your existing state and effect hooks ...
 
-  const [show, setShow] = useState(null)
-  const [seasons, setSeasons] = useState([])
-  const [episodes, setEpisodes] = useState([])
-
-  const [selectedSeason, setSelectedSeason] = useState(
-    urlSeason ? Number(urlSeason) : ''
-  )
-  const [selectedEpisode, setSelectedEpisode] = useState(
-    urlEpisode ? Number(urlEpisode) : ''
-  )
-
-  const [selectedServer, setSelectedServer] = useState('VidSrc.mov')
-  const [showPlayer, setShowPlayer] = useState(false)
-
-  const [loading, setLoading] = useState(true)
-  const [episodeLoading, setEpisodeLoading] = useState(false)
-
-  // Load the movie or show itself
-  useEffect(() => {
-    const loadContent = async () => {
-      setLoading(true)
-
-      try {
-        if (isTV) {
-          const data = await getTVDetails(id)
-          setShow(data)
-
-          const validSeasons = (data.seasons || []).filter(
-            (season) => season.season_number > 0
-          )
-          setSeasons(validSeasons)
-
-          if (!urlSeason && validSeasons.length > 0) {
-            setSelectedSeason(validSeasons[0].season_number)
-          }
-        } else {
-          const data = await getMovieDetails(id)
-          setShow(data)
-        }
-      } catch (error) {
-        console.error('Failed to load content:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadContent()
-  }, [id, isTV, urlSeason])
-
-  // TV: load episodes for the selected season
-  useEffect(() => {
-    if (!isTV || !selectedSeason) return
-
-    const loadEpisodes = async () => {
-      setEpisodeLoading(true)
-      setEpisodes([])
-      setSelectedEpisode('')
-
-      try {
-        const data = await getTVSeason(id, selectedSeason)
-        setEpisodes(data.episodes || [])
-
-        if (urlEpisode) {
-          setSelectedEpisode(Number(urlEpisode))
-        } else if (data.episodes?.length > 0) {
-          setSelectedEpisode(data.episodes[0].episode_number)
-        }
-      } catch (error) {
-        console.error('Failed to load episodes:', error)
-      } finally {
-        setEpisodeLoading(false)
-      }
-    }
-
-    loadEpisodes()
-  }, [id, isTV, selectedSeason, urlEpisode])
-
-  if (loading) {
-    return <main className="watch-page">Loading...</main>
-  }
-
-  if (!show) {
-    return <main className="watch-page">Content not found.</main>
-  }
-
-  const title = isTV ? show.name : show.title
-  const backLink = isTV ? `/tv/${id}` : `/movie/${id}`
+  // Find active server URL at top of component render scope
+  const activeServer = SERVERS.find((s) => s.name === selectedServer) || SERVERS[0]
+  const mediaType = isTV ? 'tv' : 'movie'
+  const embedUrl = activeServer.getUrl(mediaType, id, selectedSeason, selectedEpisode)
 
   return (
     <main className="watch-page">
+      {/* ... your selection sections ... */}
 
-      <Link to={backLink} className="back-link">
-        ← Back to {isTV ? 'TV Show' : 'Movie'}
-      </Link>
-
-      <h1>Watch {title}</h1>
-
-      {isTV && (
-        <>
-          <section className="watch-section">
-            <h2>1. Select Season</h2>
-
-            <div className="selection-list">
-              {seasons.map((season) => (
-                <button
-                  key={season.id}
-                  className={
-                    selectedSeason === season.season_number
-                      ? 'selection-button active'
-                      : 'selection-button'
-                  }
-                  onClick={() => {
-                    setSelectedSeason(season.season_number)
-                    setSelectedEpisode('')
-                    setShowPlayer(false)
-                  }}
-                >
-                  Season {season.season_number}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          {selectedSeason && (
-            <section className="watch-section">
-              <h2>2. Select Episode</h2>
-
-              {episodeLoading ? (
-                <p>Loading episodes...</p>
-              ) : (
-                <div className="episode-list">
-                  {episodes.map((episode) => (
-                    <button
-                      key={episode.id}
-                      className={
-                        selectedEpisode === episode.episode_number
-                          ? 'episode-button active'
-                          : 'episode-button'
-                      }
-                      onClick={() => {
-                        setSelectedEpisode(episode.episode_number)
-                        setShowPlayer(false)
-                      }}
-                    >
-                      <strong>Episode {episode.episode_number}</strong>
-                      <span>{episode.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-        </>
-      )}
-
-      {/* SELECT SERVER */}
-      {(!isTV || (selectedSeason && selectedEpisode)) && (
-        <section className="watch-section">
-          <h2>{isTV ? '3.' : '1.'} Select Server</h2>
-
-          <div className="server-list">
-            {servers.map((server) => (
-              <button
-                key={server.name}
-                className={
-                  selectedServer === server.name
-                    ? 'server-button active'
-                    : 'server-button'
-                }
-                onClick={() => {
-                  setSelectedServer(server.name)
-                  setShowPlayer(false)
-                }}
-              >
-                {server.name}
-                {server.recommended && ' ⭐'}
-              </button>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="play-button"
-            onClick={() => setShowPlayer(true)}
-          >
-            ▶ Play
-          </button>
-        </section>
-      )}
-
-      {/* PLAYER PLACEHOLDER */}
+      {/* ACTIVE PLAYER SECTION */}
       {showPlayer && (!isTV || (selectedSeason && selectedEpisode)) && (
         <section className="player-section">
-
           <div className="player-header">
             {isTV ? (
               <h2>
@@ -234,27 +71,21 @@ function Watch() {
           </div>
 
           <div className="video-container">
-            <div className="video-placeholder">
-              <p className="placeholder-label">
-                {isTV ? 'TV Show ID' : 'Movie ID'}
-              </p>
-              <p className="placeholder-id">{id}</p>
-
-              {isTV && (
-                <p className="placeholder-meta">
-                  Season {selectedSeason}, Episode {selectedEpisode}
-                </p>
-              )}
-
-              <p className="placeholder-meta">
-                Server: {selectedServer}
-              </p>
-            </div>
+            <iframe
+              key={embedUrl}
+              src={embedUrl}
+              title={`${title} Player`}
+              width="100%"
+              height="100%"
+              allowFullScreen
+              scrolling="no"
+              frameBorder="0"
+              // Essential permissions for player streaming without opening popup ads
+              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+            />
           </div>
-
         </section>
       )}
-
     </main>
   )
 }
