@@ -21,11 +21,26 @@
   z-index: 2;
 }
 
+/* Shared small eyebrow label, reused on Movies/TVShows/Search page headers */
 .hero-label {
   color: #e50914;
   font-weight: bold;
   letter-spacing: 2px;
   font-size: 14px;
+}
+
+.hero-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #e50914;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-size: 13px;
+  text-transform: uppercase;
+
+  margin-bottom: 8px;
 }
 
 .hero-carousel h1 {
@@ -102,6 +117,70 @@
 
 .hero-info-button:hover {
   background: rgba(255, 255, 255, 0.25);
+}
+
+.hero-add-button {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.hero-add-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hero-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(11, 11, 15, 0.55);
+
+  color: white;
+  font-size: 26px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  z-index: 3;
+  transition: background 0.2s ease;
+}
+
+.hero-nav:hover {
+  background: rgba(11, 11, 15, 0.85);
+}
+
+.hero-nav-prev {
+  left: 24px;
+}
+
+.hero-nav-next {
+  right: 24px;
+}
+
+@media (max-width: 700px) {
+  .hero-nav {
+    display: none;
+  }
 }
 
 .hero-dots {
@@ -236,6 +315,23 @@
   background: #22222b;
   color: #777;
   font-size: 13px;
+}
+
+.movie-card-type-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+
+  padding: 3px 8px;
+  border-radius: 4px;
+
+  background: rgba(11, 11, 15, 0.8);
+  color: white;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .movie-card-overlay {

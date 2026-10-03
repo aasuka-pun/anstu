@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom'
 
-function MovieCard({ movie }) {
+function MovieCard({ movie, showTypeBadge = false }) {
   const isTV = movie.media_type === 'tv' || (!movie.title && movie.name)
   const title = movie.title || movie.name
 
-  // Prefer a landscape backdrop image; fall back to the poster if the
-  // title has no backdrop on file
   const imageUrl = movie.backdrop_path
     ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}`
     : movie.poster_path
@@ -23,6 +21,12 @@ function MovieCard({ movie }) {
           <img src={imageUrl} alt={title} />
         ) : (
           <div className="no-poster">No Image</div>
+        )}
+
+        {showTypeBadge && (
+          <span className="movie-card-type-badge">
+            {isTV ? 'TV SHOW' : 'MOVIE'}
+          </span>
         )}
 
         <div className="movie-card-overlay">

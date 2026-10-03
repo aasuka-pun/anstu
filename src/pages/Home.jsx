@@ -246,7 +246,11 @@ function Home() {
       <HeroCarousel movies={trendingMovies} genreMap={genreMap} />
 
       {continueWatching.length > 0 && (
-        <MovieRow title="Continue Watching" movies={continueWatching} />
+        <MovieRow
+   title="Continue Watching"
+   movies={continueWatching}
+    showTypeBadge
+    />
       )}
 
       {/* "Trending Movies" reuses the same data the hero already fetched */}

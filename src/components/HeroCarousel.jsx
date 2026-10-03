@@ -1,13 +1,14 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toggleWatchlist, isInWatchlist } from '../utils/watchlist'
 
 const SLIDE_DURATION = 7000 // ms between auto-advances
 
 function HeroCarousel({ movies, genreMap }) {
   const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(0)
+  const [inWatchlist, setInWatchlist] = useState(false)
 
-  // Only use movies that actually have a backdrop to show
   const slides = movies.filter((movie) => movie.backdrop_path).slice(0, 6)
 
   const goToNext = useCallback(() => {
@@ -16,7 +17,12 @@ function HeroCarousel({ movies, genreMap }) {
     )
   }, [slides.length])
 
-  // Auto-advance
+  const goToPrev = useCallback(() => {
+    setActiveIndex((current) =>
+      slides.length > 0 ? (current - 1 + slides.length) % slides.length : 0
+    )
+  }, [slides.length])
+
   useEffect(() => {
     if (slides.length <= 1) return
 
@@ -24,19 +30,22 @@ function HeroCarousel({ movies, genreMap }) {
     return () => clearInterval(timer)
   }, [goToNext, slides.length])
 
-  // If the trending list itself updates (new data fetched) and the
-  // current index is now out of range, snap back to the first slide
+  // Clamp during render instead of resetting state in an effect
+  const safeIndex = activeIndex < slides.length ? activeIndex : 0
+  const active = slides[safeIndex]
+
   useEffect(() => {
-    if (activeIndex >= slides.length) {
-      setActiveIndex(0)
+    const checkWatchlist = () => {
+      if (!active) return
+      setInWatchlist(isInWatchlist(active.id, 'movie'))
     }
-  }, [slides.length, activeIndex])
+
+    checkWatchlist()
+  }, [active])
 
   if (slides.length === 0) {
     return null
   }
-
-  const active = slides[activeIndex]
 
   const backdropUrl = `https://image.tmdb.org/t/p/original${active.backdrop_path}`
   const year = active.release_date ? active.release_date.slice(0, 4) : null
@@ -45,6 +54,16 @@ function HeroCarousel({ movies, genreMap }) {
     .map((genreId) => genreMap[genreId])
     .filter(Boolean)
     .slice(0, 3)
+
+  const handleToggleWatchlist = () => {
+    const nowIn = toggleWatchlist({
+      id: active.id,
+      media_type: 'movie',
+      title: active.title,
+      poster_path: active.poster_path,
+    })
+    setInWatchlist(nowIn)
+  }
 
   return (
     <section
@@ -66,6 +85,10 @@ function HeroCarousel({ movies, genreMap }) {
       }}
     >
       <div className="hero-carousel-content">
+        <p className="hero-rank-badge">
+          🔥 Trending #{safeIndex + 1} Today
+        </p>
+
         <h1>{active.title}</h1>
 
         <div className="hero-meta">
@@ -99,25 +122,57 @@ function HeroCarousel({ movies, genreMap }) {
             className="hero-info-button"
             onClick={() => navigate(`/movie/${active.id}`)}
           >
-            ⓘ Info
+            ⓘ More Info
+          </button>
+
+          <button
+            type="button"
+            className="hero-add-button"
+            onClick={handleToggleWatchlist}
+            aria-label={
+              inWatchlist ? 'Remove from My List' : 'Add to My List'
+            }
+            title={inWatchlist ? 'Remove from My List' : 'Add to My List'}
+          >
+            {inWatchlist ? '✓' : '+'}
           </button>
         </div>
       </div>
 
       {slides.length > 1 && (
-        <div className="hero-dots">
-          {slides.map((movie, index) => (
-            <button
-              key={movie.id}
-              type="button"
-              aria-label={`Show ${movie.title}`}
-              className={
-                index === activeIndex ? 'hero-dot active' : 'hero-dot'
-              }
-              onClick={() => setActiveIndex(index)}
-            />
-          ))}
-        </div>
+        <>
+          <button
+            type="button"
+            className="hero-nav hero-nav-prev"
+            onClick={goToPrev}
+            aria-label="Previous"
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            className="hero-nav hero-nav-next"
+            onClick={goToNext}
+            aria-label="Next"
+          >
+            ›
+          </button>
+
+          <div className="hero-dots">
+            {slides.map((movie, index) => (
+              <button
+                key={movie.id}
+                type="button"
+                aria-label={`Show ${movie.title}`}
+                className={
+                  index === safeIndex ? 'hero-dot active' : 'hero-dot'
+                }
+                onClick={() => setActiveIndex(index)}
+              />
+            ))}
+          </div>
+        </>
       )}
     </section>
   )

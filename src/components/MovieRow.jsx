@@ -1,14 +1,13 @@
 import { useRef } from 'react'
 import MovieCard from './MovieCard'
 
-function MovieRow({ title, movies }) {
+function MovieRow({ title, movies, showTypeBadge = false }) {
   const scrollRef = useRef(null)
 
   const scrollByAmount = (direction) => {
     const container = scrollRef.current
     if (!container) return
 
-    // Scroll roughly one screenful of cards at a time
     const amount = container.clientWidth * 0.85
 
     container.scrollBy({
@@ -38,6 +37,7 @@ function MovieRow({ title, movies }) {
             <MovieCard
               key={movie.id}
               movie={movie}
+              showTypeBadge={showTypeBadge}
             />
           ))}
         </div>
