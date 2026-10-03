@@ -196,6 +196,7 @@ function Watch() {
               allowFullScreen
               scrolling="no"
               frameBorder="0"
+              lang="ko"
               allow="autoplay; encrypted-media; picture-in-picture"
             />
           </div>
