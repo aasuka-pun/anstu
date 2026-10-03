@@ -35,19 +35,11 @@ export const PROVIDERS = [
         : `https://vidfast.pro/movie/${tmdbId}` 
   },
   { 
-    id: 'vidlove',
-    name: 'VidLove', 
+    id: 'vidlink',
+    name: 'VidLink (Multi-Audio)', 
     getEmbedUrl: ({ type, tmdbId, season, episode }) => 
       type === 'tv' 
-        ? `https://vidlove.pro/tv/${tmdbId}/${season}/${episode}` 
-        : `https://vidlove.pro/movie/${tmdbId}` 
+        ? `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}` 
+        : `https://vidlink.pro/movie/${tmdbId}` 
   },
-  { 
-    id: 'vidup',
-    name: 'VidUp', 
-    getEmbedUrl: ({ type, tmdbId, season, episode }) => 
-      type === 'tv' 
-        ? `https://vidup.pro/tv/${tmdbId}/${season}/${episode}` 
-        : `https://vidup.pro/movie/${tmdbId}` 
-  }
 ]
