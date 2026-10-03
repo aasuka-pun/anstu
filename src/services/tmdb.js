@@ -135,6 +135,19 @@ export const searchMulti = (query) => {
     params: { query },
   })
 }
+
 export const getTrendingMoviesToday = () => {
   return api.get('/trending/movie/day')
+}
+
+export const getTVCredits = (id) => {
+  return api.get(`/tv/${id}/credits`)
+}
+
+export const getSimilarTV = (id) => {
+  return api.get(`/tv/${id}/similar`)
+}
+
+export const getMovieReleaseDates = (id) => {
+  return api.get(`/movie/${id}/release_dates`)
 }

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import Home from './pages/Home'
 import Movies from './pages/Movies'
 import TVShows from './pages/TVShows'
@@ -10,18 +11,13 @@ import TVDetails from './pages/TVDetails'
 import Search from './pages/Search'
 import Watch from './pages/Watch'
 
-
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
-
       <Routes>
-
         <Route path="/" element={<Home />} />
-
         <Route path="/movies" element={<Movies />} />
-
         <Route path="/tv" element={<TVShows />} />
 
         <Route
@@ -34,10 +30,7 @@ function App() {
           element={<TVDetails />}
         />
 
-        <Route
-          path="/search"
-          element={<Search />}
-        />
+        <Route path="/search" element={<Search />} />
 
         <Route
           path="/watch/movie/:id"
@@ -49,12 +42,10 @@ function App() {
           element={<Watch />}
         />
 
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
-
+        <Route path="*" element={<NotFound />} />
       </Routes>
+
+      <Footer />
     </BrowserRouter>
   )
 }
