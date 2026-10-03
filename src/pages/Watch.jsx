@@ -1,52 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import { getTVDetails, getTVSeason, getMovieDetails } from '../services/tmdb'
+import { PROVIDERS } from '../services/providers'
 import './Watch.css'
-
-// Single source of truth for embed servers
-const SERVERS = [
-  { 
-    name: 'VidSrc.mov', 
-    recommended: true, 
-    getUrl: (type, id, s, e) => type === 'tv' ? `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` : `https://vidsrc.mov/embed/movie/${id}` 
-  },
-  { 
-    name: 'VidLink', 
-    getUrl: (type, id, s, e) => type === 'tv' ? `https://vidlink.pro/tv/${id}/${s}/${e}` : `https://vidlink.pro/movie/${id}` 
-  },
-  { 
-    name: 'VidFast', 
-    getUrl: (type, id, s, e) => type === 'tv' ? `https://vidfast.pro/embed/tv/${id}/${s}/${e}` : `https://vidfast.pro/embed/movie/${id}` 
-  },
-  { 
-    name: 'Videasy', 
-    getUrl: (type, id, s, e) => type === 'tv' ? `https://player.videasy.net/tv/${id}/${s}/${e}` : `https://player.videasy.net/movie/${id}` 
-  },
-  { 
-    name: '111Movies', 
-    getUrl: (type, id, s, e) => type === 'tv' ? `https://111movies.com/embed/tv/${id}/${s}/${e}` : `https://111movies.com/embed/movie/${id}` 
-  },
-  { 
-    name: 'VidSrc.fyi', 
-    getUrl: (type, id, s, e) => type === 'tv' ? `https://vidsrc.fyi/embed/tv/${id}/${s}/${e}` : `https://vidsrc.fyi/embed/movie/${id}` 
-  },
-  { 
-    name: '2Embed', 
-    getUrl: (type, id, s, e) => type === 'tv' ? `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` : `https://www.2embed.cc/embed/${id}` 
-  },
-  { 
-    name: 'MultiEmbed', 
-    getUrl: (type, id, s, e) => type === 'tv' ? `https://multiembed.mov/directstream.php?video_id=${id}&s=${s}&e=${e}` : `https://multiembed.mov/directstream.php?video_id=${id}` 
-  }
-]
 
 function Watch() {
   const { id, season: urlSeason, episode: urlEpisode } = useParams()
   const location = useLocation()
   const isTV = location.pathname.includes('/watch/tv/')
 
-  // Component State
-  const [selectedServer, setSelectedServer] = useState('VidSrc.mov')
+  // Default to the first provider ID in your array ("videasy")
+  const [selectedProviderId, setSelectedProviderId] = useState(PROVIDERS[0].id)
   const [show, setShow] = useState(null)
   const [seasons, setSeasons] = useState([])
   const [episodes, setEpisodes] = useState([])
@@ -56,10 +20,17 @@ function Watch() {
   const [loading, setLoading] = useState(true)
   const [episodeLoading, setEpisodeLoading] = useState(false)
 
-  // Compute Active Embed URL
-  const activeServer = SERVERS.find((s) => s.name === selectedServer) || SERVERS[0]
+  // Find active provider and generate embed URL using its object syntax
+  const activeProvider = PROVIDERS.find((p) => p.id === selectedProviderId) || PROVIDERS[0]
   const mediaType = isTV ? 'tv' : 'movie'
-  const embedUrl = activeServer.getUrl(mediaType, id, selectedSeason, selectedEpisode)
+  
+  const embedUrl = activeProvider.getEmbedUrl({
+    type: mediaType,
+    tmdbId: id,
+    imdbId: show?.imdb_id, // Pass IMDB ID if available from TMDB details
+    season: selectedSeason,
+    episode: selectedEpisode
+  })
 
   // Load Main Movie / TV Show Details
   useEffect(() => {
@@ -185,16 +156,16 @@ function Watch() {
         <section className="watch-section">
           <h2>{isTV ? '3.' : '1.'} Select Server</h2>
           <div className="server-list">
-            {SERVERS.map((server) => (
+            {PROVIDERS.map((provider) => (
               <button
-                key={server.name}
-                className={selectedServer === server.name ? 'server-button active' : 'server-button'}
+                key={provider.id}
+                className={selectedProviderId === provider.id ? 'server-button active' : 'server-button'}
                 onClick={() => {
-                  setSelectedServer(server.name)
+                  setSelectedProviderId(provider.id)
                   setShowPlayer(false)
                 }}
               >
-                {server.name} {server.recommended && '⭐'}
+                {provider.name}
               </button>
             ))}
           </div>
@@ -214,7 +185,7 @@ function Watch() {
         <section className="player-section">
           <div className="player-header">
             <h2>{isTV ? `Season ${selectedSeason} • Episode ${selectedEpisode}` : title}</h2>
-            <p>Server: <strong>{selectedServer}</strong></p>
+            <p>Server: <strong>{activeProvider.name}</strong></p>
           </div>
 
           <div className="video-container">
