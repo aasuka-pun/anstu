@@ -197,6 +197,7 @@ function Watch() {
               scrolling="no"
               frameBorder="0"
               lang="ko"
+              referrerPolicy="origin"
               allow="autoplay; encrypted-media; picture-in-picture"
             />
           </div>
